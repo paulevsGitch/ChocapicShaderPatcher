@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public final class ShaderPatcher {
-	public static final String VERSION = "patcher-0.2";
+	public static final String VERSION = "patcher-0.3";
 	private static final byte[] BUFFER = new byte[1024];
 	
 	public static void main(String[] args) throws Exception {
@@ -116,7 +116,7 @@ public final class ShaderPatcher {
 				temp.mkdir();
 				try {
 					unzip(file, temp);
-					patch(sky, light);
+					patch(temp, sky, light);
 					zipFile(temp, path.substring(0, path.lastIndexOf('.')) + "_patched.zip");
 				}
 				catch (IOException e) {}
@@ -168,7 +168,7 @@ public final class ShaderPatcher {
 		System.out.println("Unzipping...");
 		unzip(file, temp);
 		System.out.println("Patching fog...");
-		patch(true, true);
+		patch(temp, true, true);
 		System.out.println("Packing...");
 		zipFile(temp, path.substring(0, path.lastIndexOf('.')) + "_patched.zip");
 		System.out.println("Cleanup...");
@@ -176,8 +176,8 @@ public final class ShaderPatcher {
 		System.out.println("Done!");
 	}
 	
-	private void patch(boolean sky, boolean light) throws IOException {
-		File input = new File("./temp/shaders/world1/composite2.fsh");
+	private void patch(File temp, boolean sky, boolean light) throws IOException {
+		File input = new File(temp, "shaders/world1/composite2.fsh");
 		List<String> lines;
 		int index = 0;
 		String line;
@@ -242,7 +242,7 @@ public final class ShaderPatcher {
 		}
 		
 		if (sky) {
-			input = new File("./temp/shaders/world1/composite5.fsh");
+			input = new File(temp, "shaders/world1/composite5.fsh");
 			if (input.exists()) {
 				lines = readFile(input);
 				index = 0;
